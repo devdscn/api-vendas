@@ -1,0 +1,4 @@
+guia prisma x Mongo:
+https://www.prisma.io/docs/concepts/components/prisma-schema
+https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/querying-the-database-typescript-mongodb
+https://www.prisma.io/docs/reference/api-reference/command-reference

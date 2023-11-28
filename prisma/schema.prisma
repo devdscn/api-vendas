@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type VendedoresId {
+  empresaId  Int
+  vendedorId Int
+}
+
+model Clientes {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  bairro        String
+  cep           String
+  cidade        String
+  contato       String?
+  /// Multiple data types found: Float: 7.3%, Int: 92.7% out of 1000 sampled entries
+  credito       Float
+  documento     String
+  endereco      String
+  fantasia      String
+  fone          String
+  idCliente     Int
+  idEmpresa     Int
+  inscEstadual  String?
+  meioPagamento String
+  razaSocial    String
+  rota          Int
+  status        Int
+  uf            String
+  vendedor      Int
+}
+
+model Empresas {
+  id           Int    @id @map("_id")
+  documento    String
+  fantasia     String
+  inscEstadual String
+  razaSocial   String
+}
+
+model PlanosPagamento {
+  id           Int      @id @map("_id")
+  acrescimo    Int
+  desconto     Int
+  idEmpresa    Int
+  meioPgamento String[]
+  nome         String
+  parcelas     Int
+}
+
+model Produtos {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  acrescimo     Int?
+  ativo         String
+  desconto      Int?
+  estoque       Int
+  fornecedor    Int
+  grupo         String
+  idEmpresa     Int
+  idFamilia     Int?
+  idProduto     Int
+  idSecundario  Int
+  /// Could not determine type: the field only had null or empty values in the sample set.
+  linha         String?
+  multiploVenda Int
+  nome          String
+  nomeFamilia   String?
+  pesada        String
+  /// Multiple data types found: Float: 95.3%, Int: 4.7% out of 1000 sampled entries
+  preco         Float
+  referencia    String?
+  unidadeCaixa  Int
+  unidadeFisica String
+  unidadeVenda  Int
+}
+
+model Vendedores {
+  id        VendedoresId @id @map("_id")
+  fone      String
+  metaVenda Int
+  nome      String
+}
+
+model Usuarios {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
+  name       String?
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
