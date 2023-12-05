@@ -59,4 +59,8 @@ export class UsuarioController {
       user: { id, name, email },
     });
   }
+
+  async getProfile(req: Request, res: Response) {
+    return res.json(req.user);
+  }
 }
