@@ -13,5 +13,5 @@ function middlewares() {
 }
 
 function routes() {
-  app.use(usuarioRoutes);
+  app.use('/users/', usuarioRoutes);
 }
