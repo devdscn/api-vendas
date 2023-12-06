@@ -1,8 +1,17 @@
 import * as express from 'express';
-import routes from '@/userRoutes';
+import usuarioRoutes from '@/routes/usuarioRoutes';
 const app = express();
-app.use(express.json());
+const port = process.env.APP_PORT;
 
-app.use(routes);
+middlewares();
+routes();
 
-app.listen(3000, () => console.log('Listening on port 3000'));
+app.listen(port, () => console.log('Listening on port 3000'));
+
+function middlewares() {
+  app.use(express.json());
+}
+
+function routes() {
+  app.use(usuarioRoutes);
+}

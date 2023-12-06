@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UsuarioController } from '@/controller/UsuarioController';
-import loginRequired from './middlewares/loginRequired';
+import loginRequired from '../middlewares/loginRequired';
 
 const routes = Router();
 
