@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { isValidObjectId } from 'mongoose';
-import { usuarioSchema } from '@/schemas/schemas.zod';
+import { usuarioSchema } from '@/schema/schemas.zod';
 
 export class UsuarioController {
   async store(req: Request, res: Response) {
@@ -49,8 +49,16 @@ export class UsuarioController {
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'informe email e senha ' });
+    const partialUsuario = usuarioSchema.partial();
+
+    const result = partialUsuario.safeParse({
+      email,
+      password,
+    });
+
+    if (!result.success) {
+      const { ...msg } = result.error.formErrors.fieldErrors;
+      return res.status(400).json({ message: msg });
     }
 
     const usuario = await prisma.usuarios.findUnique({
@@ -58,13 +66,13 @@ export class UsuarioController {
     });
 
     if (!usuario) {
-      return res.status(401).json({ message: 'email ou senha inválidos' });
+      return res.status(401).json({ message: '*email ou senha inválidos' });
     }
 
     const verifyPass = await bcrypt.compare(password, usuario.password);
 
     if (!verifyPass) {
-      return res.status(401).json({ message: 'email ou senha inválidos' });
+      return res.status(401).json({ message: 'email ou *senha inválidos' });
     }
 
     const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY ?? '', {
@@ -102,7 +110,7 @@ export class UsuarioController {
 
       const usuario = await prisma.usuarios.findUnique({ where: { id: id } });
 
-      if (!usuario) return res.json({ message: 'usuário nao existe' });
+      if (!usuario) return res.json({ message: `não existe usuário id:${id}` });
       await prisma.usuarios.delete({ where: { id: usuario.id } });
 
       return res.json({ deleted: usuario.email });
@@ -119,7 +127,7 @@ export class UsuarioController {
 
       const usuario = await prisma.usuarios.findUnique({ where: { id } });
 
-      if (!usuario) return res.json({ message: 'usuário nao existe' });
+      if (!usuario) return res.json({ message: `não existe usuário id:${id}` });
 
       const { email, name, password } = req.body;
 
@@ -138,7 +146,7 @@ export class UsuarioController {
 
       const updateUsuario = await prisma.usuarios.update({
         where: { id },
-        select: { id: true, name: true,  email: true },
+        select: { id: true, name: true, email: true },
         data: { name, email, password: hashPassword },
       });
 

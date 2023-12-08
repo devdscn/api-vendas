@@ -1,10 +1,11 @@
 import * as express from 'express';
 import usuarioRoutes from '@/routes/usuarioRoutes';
+import empresaRoutes from '@/routes/empresaRoutes';
 const app = express();
 const port = process.env.APP_PORT;
 
-middlewares();
 routes();
+middlewares();
 
 app.listen(port, () => console.log('Listening on port 3000'));
 
@@ -13,5 +14,6 @@ function middlewares() {
 }
 
 function routes() {
+  app.use('/empresas/', empresaRoutes);
   app.use('/users/', usuarioRoutes);
 }

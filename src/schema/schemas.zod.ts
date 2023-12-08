@@ -5,3 +5,5 @@ export const usuarioSchema = z.object({
   email: z.string().email('informe um email válido'),
   password: z.string().min(6, 'a senha deve ter 6 caracteres'),
 });
+
+
