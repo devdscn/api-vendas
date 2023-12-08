@@ -2,20 +2,35 @@ import { prisma } from '@/database/prisma';
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { isValidObjectId } from 'mongoose';
+import { usuarioSchema } from '@/schemas/schemas.zod';
 
 export class UsuarioController {
   async store(req: Request, res: Response) {
     const { email, name, password } = req.body;
 
-    const usuarioExists = await prisma.usuarios.findUnique({
-      where: { email },
-    });
-
-    if (usuarioExists) {
-      return res.status(400).json({ msg: 'email já existe' });
-    }
     try {
+      const usuarioExists = await prisma.usuarios.findUnique({
+        where: { email },
+      });
+
+      if (usuarioExists) {
+        return res.status(400).json({ message: 'email já existe' });
+      }
+
+      const result = usuarioSchema.safeParse({
+        name,
+        email,
+        password,
+      });
+
+      if (!result.success) {
+        const { ...msg } = result.error.formErrors.fieldErrors;
+        return res.status(400).json({ message: msg });
+      }
+
       const hashPassword = await bcrypt.hash(password, 10);
+
       const newUsuario = await prisma.usuarios.create({
         data: { email, name, password: hashPassword },
       });
@@ -26,7 +41,7 @@ export class UsuarioController {
       return res.status(201).json(usuario);
     } catch (error) {
       res.status(400).json({
-        msg: error,
+        message: error,
       });
     }
   }
@@ -35,7 +50,7 @@ export class UsuarioController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ msg: 'Credencias inválidas' });
+      return res.status(400).json({ message: 'informe email e senha ' });
     }
 
     const usuario = await prisma.usuarios.findUnique({
@@ -43,13 +58,13 @@ export class UsuarioController {
     });
 
     if (!usuario) {
-      return res.status(401).json({ msg: 'email ou senha inválidos' });
+      return res.status(401).json({ message: 'email ou senha inválidos' });
     }
 
     const verifyPass = await bcrypt.compare(password, usuario.password);
 
     if (!verifyPass) {
-      return res.status(401).json({ msg: 'email ou senha inválidos' });
+      return res.status(401).json({ message: 'email ou senha inválidos' });
     }
 
     const token = jwt.sign({ id: usuario.id }, process.env.SECRET_KEY ?? '', {
@@ -75,42 +90,55 @@ export class UsuarioController {
       });
       return res.json(usuarios);
     } catch (error) {
-      res.status(400).json({ msg: error });
+      res.status(400).json({ message: error });
     }
   }
 
   async delete(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      if (!id) return res.status(400).json({ msg: 'ID não informado' });
+      if (!id || !isValidObjectId(id))
+        return res.status(400).json({ message: 'código id inválido' });
 
       const usuario = await prisma.usuarios.findUnique({ where: { id: id } });
 
-      if (!usuario) return res.json({ msg: 'usuário nao existe' });
+      if (!usuario) return res.json({ message: 'usuário nao existe' });
       await prisma.usuarios.delete({ where: { id: usuario.id } });
 
       return res.json({ deleted: usuario.email });
     } catch (error) {
-      res.status(400).json({ msg: error });
+      res.status(400).json({ message: error });
     }
   }
 
   async update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      if (!id) return res.status(400).json({ msg: 'id não informado' });
+      if (!id || !isValidObjectId(id))
+        return res.status(400).json({ message: 'id inválido' });
 
       const usuario = await prisma.usuarios.findUnique({ where: { id } });
 
-      if (!usuario) return res.json({ msg: 'usuário nao existe' });
+      if (!usuario) return res.json({ message: 'usuário nao existe' });
 
       const { email, name, password } = req.body;
-      const hashPassword =
-        ((await bcrypt.hash(password, 10)) as string) || undefined;
+
+      const result = usuarioSchema.safeParse({
+        name,
+        email,
+        password,
+      });
+
+      if (!result.success) {
+        const { ...msg } = result.error.formErrors.fieldErrors;
+        return res.status(400).json({ message: msg });
+      }
+
+      const hashPassword = await bcrypt.hash(password, 10);
 
       const updateUsuario = await prisma.usuarios.update({
         where: { id },
-        select: { id: true, email: true, name: true },
+        select: { id: true, name: true,  email: true },
         data: { name, email, password: hashPassword },
       });
 
