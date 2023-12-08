@@ -89,7 +89,7 @@ model Vendedores {
 model Usuarios {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   email      String   @unique
-  name       String?
+  name       String
   password   String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

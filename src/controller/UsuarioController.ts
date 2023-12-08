@@ -70,7 +70,6 @@ export class UsuarioController {
 
   async index(req: Request, res: Response) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const usuarios = await prisma.usuarios.findMany({
         select: { id: true, name: true, email: true },
       });
@@ -101,24 +100,23 @@ export class UsuarioController {
       const { id } = req.params;
       if (!id) return res.status(400).json({ msg: 'id não informado' });
 
-      const usuario = await prisma.usuarios.findUnique({ where: { id: id } });
+      const usuario = await prisma.usuarios.findUnique({ where: { id } });
 
       if (!usuario) return res.json({ msg: 'usuário nao existe' });
 
       const { email, name, password } = req.body;
-      const hashPassword = await bcrypt.hash(password, 10);
+      const hashPassword =
+        ((await bcrypt.hash(password, 10)) as string) || undefined;
 
       const updateUsuario = await prisma.usuarios.update({
-        where: { id: id },
+        where: { id },
+        select: { id: true, email: true, name: true },
         data: { name, email, password: hashPassword },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _, ...newUsuario } = updateUsuario;
-
-      return res.json(newUsuario);
+      return res.json(updateUsuario);
     } catch (error) {
-      res.status(400).json({ msg: error });
+      res.status(400).json({ message: error });
     }
   }
 }
