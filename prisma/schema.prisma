@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type VendedoresId {
-  empresaId  Int
-  vendedorId Int
-}
-
 model Clientes {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   bairro        String
@@ -80,10 +75,12 @@ model Produtos {
 }
 
 model Vendedores {
-  id        VendedoresId @id @map("_id")
-  fone      String
-  metaVenda Int
-  nome      String
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  idEmpresa  Int
+  idVendedor Int
+  fone       String
+  metaVenda  Int
+  nome       String
 }
 
 model Usuarios {

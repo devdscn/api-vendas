@@ -1,6 +1,7 @@
 import * as express from 'express';
 import usuarioRoutes from '@/routes/usuarioRoutes';
 import empresaRoutes from '@/routes/empresaRoutes';
+import vendedorRoutes from '@/routes/vendedorRoutes';
 const app = express();
 const port = process.env.APP_PORT;
 
@@ -16,4 +17,5 @@ function middlewares() {
 function routes() {
   app.use('/empresas/', empresaRoutes);
   app.use('/users/', usuarioRoutes);
+  app.use('/vendedores/', vendedorRoutes);
 }
