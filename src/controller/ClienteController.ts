@@ -8,6 +8,7 @@ export class ClienteController {
       const take = Number(req?.query?.take) | 30;
 
       const clientes = await prisma.clientes.findMany({
+        
         skip,
         take,
         orderBy: {

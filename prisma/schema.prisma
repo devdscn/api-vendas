@@ -50,20 +50,21 @@ model PlanosPagamento {
 
 model Produtos {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  idSecundario  Int
+  idEmpresa     Int
+  idFamilia     Int?
+  idProduto     Int
+  idGrupo       String
   acrescimo     Int?
   ativo         String
   desconto      Int?
   estoque       Int
   fornecedor    Int
-  grupo         String
-  idEmpresa     Int
-  idFamilia     Int?
-  idProduto     Int
-  idSecundario  Int
   /// Could not determine type: the field only had null or empty values in the sample set.
   linha         String?
   multiploVenda Int
   nome          String
+  nomeGrupo     String
   nomeFamilia   String?
   pesada        String
   /// Multiple data types found: Float: 95.3%, Int: 4.7% out of 1000 sampled entries
