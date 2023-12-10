@@ -9,25 +9,25 @@ datasource db {
 
 model Clientes {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  idEmpresa     Int
+  idCliente     Int
+  idVendedor    Int
+  razaSocial    String
+  fantasia      String
+  documento     String
+  endereco      String
   bairro        String
   cep           String
   cidade        String
   contato       String?
   /// Multiple data types found: Float: 7.3%, Int: 92.7% out of 1000 sampled entries
   credito       Float
-  documento     String
-  endereco      String
-  fantasia      String
   fone          String
-  idCliente     Int
-  idEmpresa     Int
   inscEstadual  String?
   meioPagamento String
-  razaSocial    String
   rota          Int
   status        Int
   uf            String
-  vendedor      Int
 }
 
 model Empresas {
