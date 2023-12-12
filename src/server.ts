@@ -8,12 +8,13 @@ import produtoRoutes from '@/routes/produtoRoutes';
 const app = express();
 const port = process.env.APP_PORT;
 
-routes();
 middlewares();
+routes();
 
 app.listen(port, () => console.log(`Listening on port: ${port}`));
 
 function middlewares() {
+  //antes de routes
   app.use(express.json());
 }
 
