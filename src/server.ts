@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import * as express from 'express';
 import * as cors from 'cors';
 import usuarioRoutes from '@/routes/usuarioRoutes';
@@ -7,7 +8,8 @@ import clienteRoutes from '@/routes/clienteRoutes';
 import produtoRoutes from '@/routes/produtoRoutes';
 
 const app = express();
-const port = process.env.APP_PORT;
+const port = process.env.APP_PORT as string;
+console.log(`porta: ${port}`);
 
 app.use((cors as (options: cors.CorsOptions) => express.RequestHandler)({}));
 
