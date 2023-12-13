@@ -7,9 +7,7 @@ import { usuarioSchema } from '@/schema/schemas.zod';
 
 export class UsuarioController {
   async store(req: Request, res: Response) {
-    const email = req.body.email;
-    const name = 'David';
-    const password = '123456';
+    const { email, name, password } = req.body;
     try {
       const usuarioExists = await prisma.usuarios.findUnique({
         where: { email },
