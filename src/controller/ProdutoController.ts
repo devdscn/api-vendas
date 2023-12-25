@@ -41,11 +41,14 @@ export class ProdutoController {
   async show(req: Request, res: Response) {
     try {
       const { idEmpresa } = req.params;
-      if (!Number(idEmpresa))
+      const _idEmpresa = Number(idEmpresa);
+      if (!_idEmpresa) {
+        console.log(`idempresa:${idEmpresa}<> outro:${_idEmpresa}`);
         return res.status(400).json({ message: 'id inválido' });
+      }
 
       const produtos = await prisma.produtos.findMany({
-        where: { ativo: 'S' },
+        where: { idEmpresa: _idEmpresa, AND: { ativo: 'S' } },
       });
 
       res.json(produtos);
