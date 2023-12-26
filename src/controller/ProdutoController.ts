@@ -49,6 +49,7 @@ export class ProdutoController {
 
       const produtos = await prisma.produtos.findMany({
         where: { idEmpresa: _idEmpresa, AND: { ativo: 'S' } },
+        orderBy: [{ nomeGrupo: 'asc' }, { nome: 'asc' }],
       });
 
       res.json(produtos);
