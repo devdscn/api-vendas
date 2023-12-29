@@ -76,22 +76,20 @@ model Produtos {
 }
 
 model Vendedores {
-  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
   idEmpresa  Int
   idVendedor Int
   fone       String
   metaVenda  Int
   nome       String
-  Usuarios   Usuarios[]
 }
 
 model Usuarios {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  email      String      @unique
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
   name       String
   password   String
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
-  vendedor   Vendedores? @relation(fields: [IdVendedor], references: [id])
-  IdVendedor String?     @unique @db.ObjectId
+  idVendedor Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

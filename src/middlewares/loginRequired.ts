@@ -28,9 +28,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ message: 'Usuário inválido' });
     }
 
-    const { name, email } = usuario;
+    const { name, email, idVendedor } = usuario;
 
-    req.user = { id, name, email };
+    req.user = { id, name, email, idVendedor };
     return next();
   } catch (error) {
     return res.status(401).json({ message: 'Token expirado ou inválido' });

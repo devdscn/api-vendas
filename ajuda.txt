@@ -3,5 +3,11 @@ https://www.prisma.io/docs/concepts/components/prisma-schema
 https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/mongodb/querying-the-database-typescript-mongodb
 https://www.prisma.io/docs/reference/api-reference/command-reference
 
+npx prisma init
+npx prisma db pull
+npx prisma init
+npx prisma generate --watch 
+
+
 Zod:
 https://zod.dev/?id=from-npm-nodebun

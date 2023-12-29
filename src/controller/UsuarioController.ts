@@ -4,10 +4,11 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { isValidObjectId } from 'mongoose';
 import { usuarioSchema } from '@/schema/schemas.zod';
+import { Usuarios } from '@prisma/client';
 
 export class UsuarioController {
   async store(req: Request, res: Response) {
-    const { email, name, password } = req.body;
+    const { email, name, password, idVendedor }: Usuarios = req.body;
     try {
       const usuarioExists = await prisma.usuarios.findUnique({
         where: { email },
@@ -21,8 +22,8 @@ export class UsuarioController {
         name,
         email,
         password,
+        idVendedor,
       });
-
       if (!result.success) {
         const { ...msg } = result.error.formErrors.fieldErrors;
         return res.status(400).json({ message: msg });
@@ -31,7 +32,7 @@ export class UsuarioController {
       const hashPassword = await bcrypt.hash(password, 10);
 
       const newUsuario = await prisma.usuarios.create({
-        data: { email, name, password: hashPassword },
+        data: { email, name, idVendedor, password: hashPassword },
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,11 +79,11 @@ export class UsuarioController {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
 
-    const { id, name } = usuario;
+    const { id, name, idVendedor } = usuario;
 
     return res.json({
       token: token,
-      user: { id, name, email },
+      user: { id, name, email, idVendedor },
     });
   }
 
@@ -93,7 +94,7 @@ export class UsuarioController {
   async index(req: Request, res: Response) {
     try {
       const usuarios = await prisma.usuarios.findMany({
-        select: { id: true, name: true, email: true },
+        select: { id: true, name: true, email: true, idVendedor: true },
       });
       return res.json(usuarios);
     } catch (error) {
@@ -128,12 +129,20 @@ export class UsuarioController {
 
       if (!usuario) return res.json({ message: `não existe usuário id:${id}` });
 
-      const { email, name, password } = req.body;
+      const { email, name, password, idVendedor }: Usuarios = req.body;
+
+      const usuarioExists = await prisma.usuarios.findUnique({
+        where: { email, AND: { NOT: { id } } },
+      });
+
+      if (usuarioExists)
+        return res.status(400).json({ message: 'email já existe' });
 
       const result = usuarioSchema.safeParse({
         name,
         email,
         password,
+        idVendedor,
       });
 
       if (!result.success) {
@@ -145,8 +154,8 @@ export class UsuarioController {
 
       const updateUsuario = await prisma.usuarios.update({
         where: { id },
-        select: { id: true, name: true, email: true },
-        data: { name, email, password: hashPassword },
+        select: { id: true, name: true, email: true, idVendedor: true },
+        data: { name, email, idVendedor, password: hashPassword },
       });
 
       return res.json(updateUsuario);
